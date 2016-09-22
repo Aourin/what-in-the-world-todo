@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import BaseView             from '../../src';
 /**
  * Base App Class for loading in app components
  * @class App
@@ -11,7 +11,10 @@ export default class App extends Component {
 
   render () {
     return (
-      <h3>Super Cool Cheese Fish!</h3>
+      <div>
+        <h1>Super Cool Fish! - Top Level </h1>
+        <BaseView />
+      </div>
     );
   }
 }
