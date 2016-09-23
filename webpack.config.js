@@ -5,9 +5,9 @@ var path              = require('path')
 
 
 module.exports = {
-  entry: {
-    app: './app/index.js'
-  },
+  entry: [
+    './app/index.js',
+  ],
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'index.bundle.js'
@@ -26,14 +26,15 @@ module.exports = {
       filename: 'index.html',
       template:  path.resolve(__dirname, 'app') + '/index.html',
     }),
+    new webpack.HotModuleReplacementPlugin()
     //  Make it Ugly and Stuff
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false,
-      },
-      output: {
-        comments: false,
-      }
-    })
+    // new webpack.optimize.UglifyJsPlugin({
+    //   compress: {
+    //     warnings: false,
+    //   },
+    //   output: {
+    //     comments: false,
+    //   }
+    // })
   ]
 };
