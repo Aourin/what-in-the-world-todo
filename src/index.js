@@ -1,6 +1,11 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import AppRouter            from './router';
 
-export default class FishView extends Component {
+/**
+ * Base AppWrapper Class for loading in app components
+ * @class AppWrapper
+ */
+export default class AppWrapper extends Component {
   constructor () {
     super();
   }
@@ -8,10 +13,9 @@ export default class FishView extends Component {
   render () {
     return (
       <div>
-        <h2> Super Fish View Component Guy</h2>
-        <p>Just a simple view loaded into the App via src</p>
+        <h1>Super Cool Fish! - Top Level </h1>
+        <AppRouter />
       </div>
     );
   }
 }
-
