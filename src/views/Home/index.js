@@ -7,10 +7,10 @@ export default class Home extends Component {
   }
 
   render () {
+    const { children } = this.props;
     return (
       <div>
         <h1>Home Route</h1>
-        <Link to='/todos'>Go To TodoList</Link>
       </div>
     );
   }
