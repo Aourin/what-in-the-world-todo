@@ -1,6 +1,6 @@
 import React    from 'react';
-import Home     from './Home';
-import TodoList from './TodoList';
+import Home     from './views/Home';
+import TodoList from './views/TodoList';
 
 import {
   BrowserRouter as Router,
