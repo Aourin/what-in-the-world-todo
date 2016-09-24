@@ -1,5 +1,5 @@
 import React, { PropTypes as T } from 'react';
-
+import './tile-style.scss';
 /**
  * Simple Tile Stateless Component
  */

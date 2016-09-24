@@ -1,7 +1,6 @@
 import React, { Component, PropTypes as T } from 'react';
 import Tile from '../../components/Tile';
-
-import { Link } from 'react-router';
+import './todo-list-styles.scss';
 
 export default class TodoListView extends Component {
   static propTypes = {
@@ -43,10 +42,10 @@ export default class TodoListView extends Component {
 
   render () {
     return (
-      <div className='container-fluid'>
+      <div className='container-fluid sidebar-list'>
         <div className='row'>
           <div className='col-md'>
-            List Of Todos Goes Here
+            <h3>List O' Todos</h3>
             { this.renderTodos() }
           </div>
         </div>
