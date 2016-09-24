@@ -3,13 +3,15 @@ var path              = require('path')
   , webpack           = require('webpack')
   , HtmlWebpackPlugin = require('html-webpack-plugin');
 
+var BUILD_PATH = path.resolve(__dirname, 'dist');
 
 module.exports = {
-  entry: {
-    app: './app/index.js'
-  },
+  entry: [
+    './app/index.js',
+  ],
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: BUILD_PATH,
+    publicPath: '/',
     filename: 'index.bundle.js'
   },
   module: {
@@ -19,21 +21,17 @@ module.exports = {
       loader: 'babel-loader'
     }]
   },
+  devServer: {
+    hot: true,
+    historyApiFallback: true
+  },
   plugins: [
     //  Handles HTML File build
     new HtmlWebpackPlugin({
       hash: true,
       filename: 'index.html',
-      template:  path.resolve(__dirname, 'app') + '/index.html',
+      template: './app/index.html'
     }),
-    //  Make it Ugly and Stuff
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false,
-      },
-      output: {
-        comments: false,
-      }
-    })
+    new webpack.HotModuleReplacementPlugin()
   ]
 };
