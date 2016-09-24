@@ -33,14 +33,5 @@ module.exports = {
       template: './app/index.html'
     }),
     new webpack.HotModuleReplacementPlugin()
-    //  Make it Ugly and Stuff
-    // new webpack.optimize.UglifyJsPlugin({
-    //   compress: {
-    //     warnings: false,
-    //   },
-    //   output: {
-    //     comments: false,
-    //   }
-    // })
   ]
 };
