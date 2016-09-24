@@ -21,12 +21,16 @@ module.exports = {
       loader: 'babel-loader'
     }]
   },
+  devServer: {
+    hot: true,
+    historyApiFallback: true
+  },
   plugins: [
     //  Handles HTML File build
     new HtmlWebpackPlugin({
       hash: true,
       filename: 'index.html',
-      template: './app/index.html',
+      template: './app/index.html'
     }),
     new webpack.HotModuleReplacementPlugin()
     //  Make it Ugly and Stuff
