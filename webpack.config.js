@@ -3,13 +3,15 @@ var path              = require('path')
   , webpack           = require('webpack')
   , HtmlWebpackPlugin = require('html-webpack-plugin');
 
+var BUILD_PATH = path.resolve(__dirname, 'dist');
 
 module.exports = {
   entry: [
     './app/index.js',
   ],
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: BUILD_PATH,
+    publicPath: '/',
     filename: 'index.bundle.js'
   },
   module: {
@@ -24,7 +26,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       hash: true,
       filename: 'index.html',
-      template:  path.resolve(__dirname, 'app') + '/index.html',
+      template: './app/index.html',
     }),
     new webpack.HotModuleReplacementPlugin()
     //  Make it Ugly and Stuff
