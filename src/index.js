@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import AppRouter            from './router';
+import './styles/styles.scss';
 
 /**
  * Base AppWrapper Class for loading in app components
@@ -13,8 +14,12 @@ export default class AppWrapper extends Component {
   render () {
     return (
       <div>
-        <h1>Super Cool Fish! - Top Level </h1>
-        <AppRouter />
+        <header>
+          <h4>What in the world TODO!?</h4>
+        </header>
+        <div className='app-body app-body--with-header'>
+          <AppRouter />
+        </div>
       </div>
     );
   }

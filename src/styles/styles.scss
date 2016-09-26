@@ -1,0 +1,46 @@
+@import 'utils.scss';
+@import 'colors.scss';
+@import 'variables.scss';
+@import 'base.scss';
+
+body {
+  display: block;
+  position: fixed;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: $app-header-height;
+  background: $app-main;
+  line-height: $app-header-height;
+  border: {
+    bottom: $header-border-size solid $app-main-dark
+  };
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+.app-body {
+  position: fixed;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: {
+    y: scroll;
+    x: hidden;
+  }
+
+  &--with-header {
+    top: $app-header-height;
+    height: $app-body-height;
+  }
+}
+
