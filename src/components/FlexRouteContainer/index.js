@@ -6,19 +6,20 @@ import './flex-container-styles.scss';
  */
 export default class FlexRouteContainer extends Component {
   static propTypes = {
-    panels: T.array
+    panels: T.array,
+    history: T.object,
+    params: T.object
   };
 
   render () {
-    const { panels } = this.props;
-
+    const { panels, history, params } = this.props;
     //  Iterates and maps out flex panels with passed sizes
     const flexPanels = panels.map((panel, idx) => {
       let component = panel.children;
 
       //  Will render a component if passed as a panel prop
       if (panel.component) {
-        component = <panel.component />
+        component = <panel.component history={history} params={params} />
       }
 
       return (

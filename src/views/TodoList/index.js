@@ -1,28 +1,35 @@
 import React, { Component, PropTypes as T } from 'react';
-import Tile from '../../components/Tile';
-import MOCK_DATA from './mock';
+import { Link }   from 'react-router';
+import Tile       from '../../components/Tile';
+import MOCK_DATA  from './mock';
+
 import './todo-list-styles.scss';
 
 export default class TodoListView extends Component {
   static propTypes = {
-    params: T.object
+    params: T.object,
+    history: T.object
+  };
+  static contextTypes = {
+    router: T.object.isRequired
   };
   state = {
     todos: MOCK_DATA
   };
-  constructor () {
-    super();
+
+  selectTodo (id) {
+    this.context.router.transitionTo(`/todos/${id}`);
   }
 
   renderTodos () {
     const { todos } = this.state;
-
-    return todos.map(({title, user}, idx) => {
+    return todos.map(({title, user, id}, idx) => {
       return (
         <Tile
           key={idx}
           title={title}
-          content={user && user.email} />
+          content={user && user.email}
+          onClick={() => {this.selectTodo(id)}}/>
       );
     });
   }
