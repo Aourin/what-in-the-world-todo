@@ -24,7 +24,7 @@ export default class FlexRouteContainer extends Component {
       return (
         <div
           key={idx}
-          className='flex-panel'
+          className='flex-route-panel'
           style={{ flex: panel.size }}>
           {component}
         </div>
@@ -32,7 +32,7 @@ export default class FlexRouteContainer extends Component {
     });
 
     return (
-      <div className='flex-container'>
+      <div className='flex-route-container'>
         {flexPanels}
       </div>
     );
