@@ -1,5 +1,6 @@
 import React, { Component, PropTypes as T } from 'react';
 import Tile from '../../components/Tile';
+import MOCK_DATA from './mock';
 import './todo-list-styles.scss';
 
 export default class TodoListView extends Component {
@@ -7,22 +8,7 @@ export default class TodoListView extends Component {
     params: T.object
   };
   state = {
-    todos: [
-      {
-        title: 'Willy\'s Todo',
-        user: {
-          email: 'fishmoo@fishcheesemoo.com',
-          name: 'Whacky Willy'
-        }
-      },
-      {
-        title: 'Off To The Mines',
-        user: {
-          email: 'miningguy@fishcheesemoo.com',
-          name: 'Mine Guy'
-        }
-      }
-    ]
+    todos: MOCK_DATA
   };
   constructor () {
     super();
@@ -31,9 +17,10 @@ export default class TodoListView extends Component {
   renderTodos () {
     const { todos } = this.state;
 
-    return todos.map(({title, user}) => {
+    return todos.map(({title, user}, idx) => {
       return (
         <Tile
+          key={idx}
           title={title}
           content={user && user.email} />
       );
@@ -58,3 +45,4 @@ export default class TodoListView extends Component {
 //TODO: Add integration with data
 //TODO: Cleanup Route logic
 //TODO: Add LOTS of styles
+//TODO: Remove mock data

@@ -17,7 +17,7 @@ export default class AppWrapper extends Component {
         <header>
           <h4>What in the world TODO!?</h4>
         </header>
-        <div className='app-body app-body--with-header'>
+        <div>
           <AppRouter />
         </div>
       </div>

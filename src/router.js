@@ -87,7 +87,7 @@ const routes = [
 const AppRouter = () => {
   return (
     <Router>
-      <div>
+      <div className='app-body app-body--with-header'>
         { routes.map((route, i) => <MatchWithSubRoutes key={i} {...route}/>) }
       </div>
     </Router>
