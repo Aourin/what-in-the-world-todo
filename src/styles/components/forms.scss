@@ -1,0 +1,18 @@
+$form-input-border-thickness: 0.1rem;
+$form-input-border-unfocus: $app-gray;
+$form-input-border-focus: $app-main;
+
+.input {
+  border-color: $form-input-border-unfocus;
+  border-width: $form-input-border-thickness;
+}
+.input--line-only {
+  border: 0;
+  border-radius: 0;
+  border-bottom: $form-input-border-thickness solid $form-input-border-unfocus;
+
+  &:focus {
+    border-color: $form-input-border-focus
+  }
+}
+
