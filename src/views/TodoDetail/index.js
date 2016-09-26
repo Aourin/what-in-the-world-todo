@@ -15,7 +15,6 @@ export default class TodoDetail extends Component {
   }
   render () {
     const { params } = this.props;
-    console.log('Details', params);
     return (
       <div>
         <div className='row'>

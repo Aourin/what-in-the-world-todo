@@ -10,31 +10,27 @@ export default class TodoListView extends Component {
     params: T.object,
     history: T.object
   };
+  static contextTypes = {
+    router: T.object.isRequired
+  };
   state = {
     todos: MOCK_DATA
   };
-  constructor () {
-    super();
-  }
 
   selectTodo (id) {
-    console.log('selected', id);
-    this.props.history.push(`/todos/${id}`);
+    this.context.router.transitionTo(`/todos/${id}`);
   }
 
   renderTodos () {
     const { todos } = this.state;
-    console.log('this.conte', this.context);
     return todos.map(({title, user, id}, idx) => {
-
-      return <Link to={`/todos/${id}`} >Go To { id }</Link>;
-      // return (
-      //   <Tile
-      //     key={idx}
-      //     title={title}
-      //     content={user && user.email}
-      //     onClick={() => {this.selectTodo(id)}}/>
-      // );
+      return (
+        <Tile
+          key={idx}
+          title={title}
+          content={user && user.email}
+          onClick={() => {this.selectTodo(id)}}/>
+      );
     });
   }
 

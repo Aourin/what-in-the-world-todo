@@ -12,9 +12,8 @@ import TodoDetail         from '../views/TodoDetail';
 //  Components
 import MatchTypeRoute     from '../components/MatchTypeRoute';
 
-import {
-  SPLIT_VIEW,
-  SINGLE_VIEW }           from './constants';
+import { SPLIT_VIEW }     from './constants';
+
 // Route Configuration
 const routes = [
   {

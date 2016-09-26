@@ -9,16 +9,12 @@ export default class MatchTypeRoute extends Component {
   static propTypes = {
     route: T.object
   };
-  componentWillReceiveProps () {
-    console.log("YES");
-  }
+
   render () {
     const { route, history } = this.props;
     //  Returns a Route Match
     return (
       <Match {...route} history={history} render={(props) => {
-        console.log('match props', props);
-        console.log('context', this.context);
         const { type, panels } = route;
         const routeProps = {
           history,
