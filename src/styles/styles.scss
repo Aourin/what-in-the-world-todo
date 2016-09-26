@@ -1,7 +1,11 @@
-@import 'utils.scss';
-@import 'colors.scss';
-@import 'variables.scss';
-@import 'base.scss';
+@import 'utils';
+@import 'colors';
+@import 'variables';
+@import 'base';
+
+@import 'components/detail-pane-styles';
+@import 'components/forms';
+@import 'components/panels';
 
 body {
   display: block;
