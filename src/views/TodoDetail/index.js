@@ -1,4 +1,5 @@
 import React, { Component, PropTypes as T } from 'react';
+import InputBuffer from '../../components/InputBuffer';
 
 export default class TodoDetail extends Component {
   static propTypes = {
@@ -7,23 +8,11 @@ export default class TodoDetail extends Component {
   state = {
     todo: {},
     buffer: {},
-    editTitle: false
+    edit: {}
   };
   constructor () {
     super();
-  }
-
-  /**
-   * Handles hitting enter on the input
-   * @param e
-   * @param prop
-   */
-  handleKeyDown (e, prop) {
-    if (e.keyCode === 13) {
-      this.onSetProp(prop, e.target.value);
-    } else if (e.keyCode === 27) {
-      this.onResetBuffer();
-    }
+    this.onResetBuffer = this.onResetBuffer.bind(this);
   }
 
   /**
@@ -49,7 +38,7 @@ export default class TodoDetail extends Component {
     this.setState({
       todo: updated,
       buffer: updated,
-      editTitle: false
+      edit: {}
     });
   }
 
@@ -59,8 +48,18 @@ export default class TodoDetail extends Component {
   onResetBuffer () {
     this.setState({
       buffer: {...this.state.todo},
-      editTitle: false
+      edit: {}
     });
+  }
+
+  /**
+   * Sets the buffer state active
+   * @param prop
+   */
+  editBuffer (prop) {
+    const newState = {...this.state};
+    newState.edit[prop] = true;
+    this.setState(newState);
   }
 
   /**
@@ -68,28 +67,31 @@ export default class TodoDetail extends Component {
    * @returns {JSX}
    */
   renderTitle () {
-    console.log('title', this.state.todo);
-    const { editTitle, todo, buffer } = this.state;
-    if (editTitle) {
+    const { todo, buffer, edit } = this.state;
+
+    //  Checks if title is in the edit state
+    if (edit.title) {
       return (
-        <input
+        <InputBuffer
           name='title'
           placeholder='Enter Title of Cool Todo List'
           className='form-control form-control-lg input input--line-only'
-          value={buffer.title || ''}
-          onKeyDown={(e) => {this.handleKeyDown(e, 'title');}}
-          onChange={(e) => {this.onChangeProp('title', e.target.value)}}
-          onBlur={(e) => {this.onSetProp('title', e.target.value);}} />
+          value={todo.title || ''}
+          onChange={(e) => {
+            this.onSetProp('title', e.target.value)
+          }}
+          onBlur={this.onResetBuffer}/>
       );
     } else {
+
+      //  Creates the title and edit icon
       const title = todo.title ? todo.title : 'Please Add A Title';
       return (
         <div className='panel-title'>
-          <i className='fa fa-pencil-square-o' onClick={() => {this.setState({editTitle: true})}}></i> {title}
+          <i className='fa fa-pencil-square-o' onClick={() => this.editBuffer('title')} /> {title}
         </div>
       );
     }
-
   }
 
   render () {
@@ -100,7 +102,6 @@ export default class TodoDetail extends Component {
         <div className='row'>
           <div className='col-md'>
             {this.renderTitle()}
-            <p>Details for {params.id}</p>
           </div>
         </div>
       </div>
