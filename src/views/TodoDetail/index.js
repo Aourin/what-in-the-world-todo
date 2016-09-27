@@ -1,30 +1,25 @@
 import React, { Component, PropTypes as T } from 'react';
+import _                                    from 'lodash';
+
 import InputBuffer from '../../components/InputBuffer';
+import TodoItem    from './TodoItem'
 
 export default class TodoDetail extends Component {
   static propTypes = {
     params: T.object
   };
   state = {
-    todo: {},
+    todo: {
+      items: []
+    },
     buffer: {},
     edit: {}
   };
+
   constructor () {
     super();
     this.onResetBuffer = this.onResetBuffer.bind(this);
-  }
-
-  /**
-   * Handles buffer changes on the state model
-   * @param prop
-   * @param value
-   */
-  onChangeProp (prop, value) {
-    const updatedBuffer = {...this.state.todo, [prop]: value};
-    this.setState({
-      buffer: updatedBuffer
-    });
+    this.onAddTodo = this.onAddTodo.bind(this);
   }
 
   /**
@@ -32,9 +27,10 @@ export default class TodoDetail extends Component {
    * @param prop
    * @param value
    */
-  onSetProp (prop, value) {
-    const updated = {...this.state.todo, [prop]: value};
-
+  onSetProp (propPath, value) {
+    const updated = {...this.state.todo};
+    _.set(updated, propPath, value);
+    console.log('new updated', updated);
     this.setState({
       todo: updated,
       buffer: updated,
@@ -63,6 +59,43 @@ export default class TodoDetail extends Component {
   }
 
   /**
+   * Adds a todo item to the state
+   */
+  onAddTodo () {
+    const todo = {...this.state.todo};
+    todo.items.push({
+      complete: false
+    });
+
+    this.setState({ todo });
+  }
+
+  onToggleTodo (idx) {
+    const todoList = {...this.state.todo};
+    const todoItem = todoList.items[idx];
+
+    todoItem.complete = !todoItem.complete;
+
+    this.setState({
+      todo: todoList
+    })
+  }
+
+  renderTodoEdit (item, idx) {
+    return (
+      <InputBuffer
+        name={`todo-item-${idx}`}
+        placeholder='Enter the thing todo'
+        className='form-control form-control input input--line-only'
+        value={item.label || ''}
+        onChange={(e) => {
+          this.onSetProp(`items[${idx}].label`, e.target.value);
+        }}
+        onBlur={this.onResetBuffer}
+      />
+    )
+  }
+  /**
    * Renders the title and input
    * @returns {JSX}
    */
@@ -86,22 +119,52 @@ export default class TodoDetail extends Component {
 
       //  Creates the title and edit icon
       const title = todo.title ? todo.title : 'Please Add A Title';
-      return (<span><i className='fa fa-pencil-square-o' onClick={() => this.editBuffer('title')} /> {title}</span>);
+      return (
+        <span>
+          <i className='fa fa-pencil-square-o' onClick={() => this.editBuffer('title')} /> {title}
+        </span>
+      );
     }
   }
 
+  //TODO: This is getting big, should be refactored into smaller chunks
+
+  /**
+   * Render the Todos
+   * @returns {JSX}
+   */
   renderTodos () {
     const { todo } = this.state;
-    const addItem = <button className='btn btn-main btn-block'>Add Item</button>;
+    const addItem = (
+      <button
+        className='btn btn-main btn-block'
+        onClick={this.onAddTodo}>
+        <i className='fa fa-plus' /> Add Item
+      </button>
+    );
 
     let listState;
 
     //  Checks todos and renders the state of the list
     if (Array.isArray(todo.items) && todo.items.length) {
       const items = todo.items.map((item, idx) => {
+
+        let todoItem = (
+          <TodoItem
+            todo={item}
+            onToggle={() => this.onToggleTodo(idx)}
+            onEdit={() => this.editBuffer(`Todo:${idx}`) }
+            on/>
+        );
+
+        //  Check if Todo is in edit state
+        if (this.state.edit[`Todo:${idx}`]) {
+          todoItem = this.renderTodoEdit(item, idx);
+        }
+
         return (
           <li key={idx}>
-            {item.label || 'Please enter a label'}
+            {todoItem}
           </li>
         );
       });
@@ -109,10 +172,11 @@ export default class TodoDetail extends Component {
       listState =(
         <ul className='list'>
           {items}
-          <li>{addItem}</li>
         </ul>
       );
     } else {
+
+      //  Sets empty state
       listState = (
         <div className='text-md-center m-y-1 text-muted'>
          <h1> <i className='fa fa-leaf fa-3 color-green' /></h1>
@@ -155,3 +219,7 @@ export default class TodoDetail extends Component {
 }
 
 //TODO: Refactor todo items into separte comp
+//TODO: Refactor empty state to generic empty state comp for reuse
+//TODO: Experimenting with view only state handling pattern thingy
+//TODO: Reorganize functions by group
+//  Potential state issue with how it is tracked by array index

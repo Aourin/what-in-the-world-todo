@@ -1,10 +1,23 @@
 $todo-item-size: 1.5rem;
+$todo-item-transition-speed: 0.5s;
+$todo-item-padding: 0.2rem;
+$todo-item-hover-color: #DEDEDE;
 
+.todo-close {
+  opacity: 0;
+}
 .todo-item {
   font-size: $todo-item-size;
-
+  padding: $todo-item-padding 0;
   &--complete {
     font-style: italic;
+  }
+  &:hover {
+    background: $todo-item-hover-color;
+    & .todo-close {
+      opacity: 1;
+      transition: $todo-item-transition-speed;
+    }
   }
 }
 .todo-icon {
