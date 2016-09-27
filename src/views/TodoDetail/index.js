@@ -86,12 +86,50 @@ export default class TodoDetail extends Component {
 
       //  Creates the title and edit icon
       const title = todo.title ? todo.title : 'Please Add A Title';
-      return (
-        <div className='panel-title'>
-          <i className='fa fa-pencil-square-o' onClick={() => this.editBuffer('title')} /> {title}
+      return (<span><i className='fa fa-pencil-square-o' onClick={() => this.editBuffer('title')} /> {title}</span>);
+    }
+  }
+
+  renderTodos () {
+    const { todo } = this.state;
+    const addItem = <button className='btn btn-main btn-block'>Add Item</button>;
+
+    let listState;
+
+    //  Checks todos and renders the state of the list
+    if (Array.isArray(todo.items) && todo.items.length) {
+      const items = todo.items.map((item, idx) => {
+        return (
+          <li key={idx}>
+            {item.label || 'Please enter a label'}
+          </li>
+        );
+      });
+
+      listState =(
+        <ul className='list'>
+          {items}
+          <li>{addItem}</li>
+        </ul>
+      );
+    } else {
+      listState = (
+        <div className='text-md-center m-y-1 text-muted'>
+         <h1> <i className='fa fa-leaf fa-3 color-green' /></h1>
+          <p className='p-x-4'>
+            Hate to leaf you hangin', but it looks like you have nothing to do my friend.
+            Try adding another item or mess with those fancy <i className='fa fa-toggle-off color-green' /> filter things.
+          </p>
         </div>
       );
     }
+
+    return (
+      <div className=''>
+        {listState}
+        {addItem}
+      </div>
+    );
   }
 
   render () {
@@ -101,7 +139,14 @@ export default class TodoDetail extends Component {
       <div className='detail-pane'>
         <div className='row'>
           <div className='col-md'>
-            {this.renderTitle()}
+            <div className='panel panel--outline panel--outline-main'>
+              <div className='panel-title bg-main color-white'>
+                {this.renderTitle()}
+              </div>
+              <div className='panel-body'>
+                {this.renderTodos()}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -109,4 +154,4 @@ export default class TodoDetail extends Component {
   }
 }
 
-//TODO: Refactor Input to separate component for handling key bindings
+//TODO: Refactor todo items into separte comp
