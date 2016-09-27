@@ -102,6 +102,18 @@ export default class TodoDetail extends Component {
     })
   }
 
+  /**
+   * Save Todo by sending to service
+   */
+  onSaveTodo () {
+    console.log('This Will Call a save');
+  }
+  /**
+   * Render todo item edit with InputBuffer
+   * @param item
+   * @param idx
+   * @returns {XML}
+   */
   renderTodoEdit (item, idx) {
     return (
       <InputBuffer
@@ -156,13 +168,6 @@ export default class TodoDetail extends Component {
    */
   renderTodos () {
     const { todo } = this.state;
-    const addItem = (
-      <button
-        className='btn btn-main btn-block'
-        onClick={this.onAddTodo}>
-        <i className='fa fa-plus' /> Add Item
-      </button>
-    );
 
     let listState;
 
@@ -210,11 +215,35 @@ export default class TodoDetail extends Component {
     }
 
     return (
-      <div className=''>
+      <div className='list-wrapper'>
         {listState}
-        {addItem}
       </div>
     );
+  }
+
+  renderActions () {
+    const addItem = (
+      <button
+        key='add-item-btn'
+        name='add-item'
+        className='btn btn-main btn-block'
+        onClick={this.onAddTodo}>
+        <i className='fa fa-plus' /> Add Item
+      </button>
+    );
+    const saveBtn = (
+      <button
+        key='save-btn'
+        name='add-item'
+        className='btn btn-green btn-block'
+        onClick={this.onSaveTodo}>
+        <i className='fa fa-save' /> Save Fancy List
+      </button>
+    );
+    return [
+      addItem,
+      saveBtn
+    ];
   }
 
   render () {
@@ -230,6 +259,7 @@ export default class TodoDetail extends Component {
               </div>
               <div className='panel-body'>
                 {this.renderTodos()}
+                {this.renderActions()}
               </div>
             </div>
           </div>
@@ -243,4 +273,5 @@ export default class TodoDetail extends Component {
 //TODO: Refactor empty state to generic empty state comp for reuse
 //TODO: Experimenting with view only state handling pattern thingy
 //TODO: Reorganize functions by group
+
 //  Potential state issue with how it is tracked by array index
