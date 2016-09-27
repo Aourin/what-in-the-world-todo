@@ -1,20 +1,23 @@
-$app-blue: #5d9aff;
-$app-red: #ff5b5f;
-$app-yellow: #fff78b;
-$app-green: #57de73;
-$app-gray: #919191;
-
-$app-main: $app-blue;
-$app-main-dark: $app-main - #111;
-
 @each $name, $color in (
     (blue, $app-blue),
     (red, $app-red),
     (yellow, $app-yellow),
     (green, $app-green),
     (main, $app-main),
-    (main-dark, $app-main-dark)) {
+    (main-dark, $app-main-dark),
+    (white, $app-white)) {
   .bg-#{$name} {
     background: $color;
+  }
+  .color-#{$name} {
+    color: $color;
+  }
+  .btn-#{$name} {
+    background: $color;
+    color: white;
+
+    &:hover {
+      background: $color * 0.8;
+    }
   }
 }

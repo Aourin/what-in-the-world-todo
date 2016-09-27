@@ -1,6 +1,8 @@
 import React, { Component, PropTypes as T } from 'react';
-import AppRouter            from './routes/router';
+
 import './styles/styles.scss';
+import AppRouter            from './routes/router';
+
 
 /**
  * Base AppWrapper Class for loading in app components
