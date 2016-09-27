@@ -1,0 +1,12 @@
+$todo-item-size: 1.5rem;
+
+.todo-item {
+  font-size: $todo-item-size;
+
+  &--complete {
+    font-style: italic;
+  }
+}
+.todo-icon {
+  font-size: $todo-item-size * 1.2;
+}
