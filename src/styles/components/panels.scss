@@ -1,6 +1,34 @@
 $panel-title-font-size: 1.5rem;
+$panel-padding: 1rem;
+$panel-border-width: 0.25rem;
 
+
+.panel {
+  &--outline {
+    border: {
+      width: $panel-border-width;
+      radius: $panel-border-width;
+      style: solid;
+    };
+
+    &-main {
+      border-color: $app-main;
+    }
+    &-blue {
+       border-color: $app-gray;
+    }
+    &-blue {
+      border-color: $app-blue;
+    }
+    &-main-dark {
+      border-color: $app-main-dark;
+    }
+  }
+}
 .panel-title {
   font-size: $panel-title-font-size;
+  padding:  $panel-padding;
 }
-
+.panel-body {
+  padding: $panel-padding;
+}

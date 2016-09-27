@@ -3,6 +3,7 @@ $app-red: #ff5b5f;
 $app-yellow: #fff78b;
 $app-green: #57de73;
 $app-gray: #919191;
+$app-white: white;
 
 $app-main: $app-blue;
 $app-main-dark: $app-main - #111;
@@ -13,8 +14,16 @@ $app-main-dark: $app-main - #111;
     (yellow, $app-yellow),
     (green, $app-green),
     (main, $app-main),
-    (main-dark, $app-main-dark)) {
+    (main-dark, $app-main-dark),
+    (white, $app-white)) {
   .bg-#{$name} {
     background: $color;
+  }
+  .color-#{$name} {
+    color: $color;
+  }
+  .btn-#{$name} {
+    background: $color;
+    color: white;
   }
 }
