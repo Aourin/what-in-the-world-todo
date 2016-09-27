@@ -70,6 +70,10 @@ export default class TodoDetail extends Component {
     this.setState({ todo });
   }
 
+  /**
+   * Toggle the todo item completion
+   * @param idx
+   */
   onToggleTodo (idx) {
     const todoList = {...this.state.todo};
     const todoItem = todoList.items[idx];
@@ -78,6 +82,23 @@ export default class TodoDetail extends Component {
 
     this.setState({
       todo: todoList
+    })
+  }
+
+  /**
+   * Handle removing an item from the todo
+   * @param idx
+   */
+  onRemoveTodo (idx) {
+    const { todo } = this.state;
+
+    const newItems = todo.items.filter((item, index) => idx !== index);
+    this.setState({
+      todo: {
+        ...todo,
+        items: newItems
+      },
+      edit: {}
     })
   }
 
@@ -154,7 +175,7 @@ export default class TodoDetail extends Component {
             todo={item}
             onToggle={() => this.onToggleTodo(idx)}
             onEdit={() => this.editBuffer(`Todo:${idx}`) }
-            on/>
+            onRemove={() => this.onRemoveTodo(idx)}/>
         );
 
         //  Check if Todo is in edit state

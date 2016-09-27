@@ -1,16 +1,44 @@
+@import '../../styles/variables';
+
 $todo-item-size: 1.5rem;
-$todo-item-transition-speed: 0.5s;
+$todo-item-transition-speed: 0.25s;
 $todo-item-padding: 0.2rem;
-$todo-item-hover-color: #DEDEDE;
+$todo-item-hover-color: $app-yellow;
 
 .todo-close {
   opacity: 0;
+  margin-left: auto;
+  color: $app-red;
+
+  &:hover {
+    color: $app-red * 0.8;
+  }
+}
+.todo-check {
+  &:hover {
+    color: $app-green;
+  }
+  &--complete {
+    color: $app-green;
+    &:hover {
+      color: $app-red;
+    }
+  }
 }
 .todo-item {
   font-size: $todo-item-size;
-  padding: $todo-item-padding 0;
+  padding: $todo-item-padding $todo-item-padding*2;
+  display: flex;
+  margin-right: auto;
+  align-items: center;
+
   &--complete {
     font-style: italic;
+    & .label {
+      text-decoration: line-through;
+      color: $app-gray;
+      font-weight: 100;
+    }
   }
   &:hover {
     background: $todo-item-hover-color;
@@ -22,4 +50,5 @@ $todo-item-hover-color: #DEDEDE;
 }
 .todo-icon {
   font-size: $todo-item-size * 1.2;
+  cursor: pointer;
 }
