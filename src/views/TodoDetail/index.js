@@ -5,6 +5,11 @@ import InputBuffer from '../../components/InputBuffer';
 import TodoItem    from './TodoItem'
 import TodoService from '../../services/TodoService';
 
+//  Filter Constants
+const ALL = 'ALL';
+const COMPLETE = 'COMPLETE';
+const ACTIVE = 'ACTIVE';
+
 export default class TodoDetail extends Component {
   static propTypes = {
     params: T.object
@@ -12,7 +17,8 @@ export default class TodoDetail extends Component {
   state = {
     todo: {},
     buffer: {},
-    edit: {}
+    edit: {},
+    filters: [ALL, ACTIVE, COMPLETE]
   };
 
   constructor () {
@@ -22,6 +28,7 @@ export default class TodoDetail extends Component {
     this.onAddTodo = this.onAddTodo.bind(this);
     this.onSaveTodo = this.onSaveTodo.bind(this);
     this.onClearComplete = this.onClearComplete.bind(this);
+    this.onToggleFilter = this.onToggleFilter.bind(this);
   }
 
   componentWillMount () {
@@ -143,8 +150,6 @@ export default class TodoDetail extends Component {
     });
   }
 
-
-
   /**
    * Save Todo by sending to service
    */
@@ -156,6 +161,49 @@ export default class TodoDetail extends Component {
       });
 
     this.refreshState();
+  }
+
+  /**
+   * Toggles filters left or right by direction
+   * @param type
+   */
+  onToggleFilter (direction) {
+    const [first, second, third] = this.state.filters;
+    let filters;
+    if (direction === 'left') {
+      filters = [second, third, first];
+    } else if (direction === 'right') {
+      filters = [third, first, second];
+    }
+
+    this.setState({
+      filters: filters
+    });
+
+  }
+
+  //TODO: Refactor filters to just iterate on an index ?
+  /**
+   * Checks the first state filter and
+   * @param todos
+   * @returns {*}
+   */
+  getFilteredTodos (todos) {
+    const currentFilter = this.state.filters[0];
+    let filtered;
+
+    switch (currentFilter) {
+      case ALL : filtered = [...todos];
+        break;
+      case COMPLETE: filtered = todos.filter(item => item.complete);
+        break;
+      case ACTIVE: filtered = todos.filter(item => !item.complete);
+        break;
+      default: [...todos];
+    }
+
+    return filtered;
+
   }
   /**
    * Refreshes the state
@@ -187,6 +235,7 @@ export default class TodoDetail extends Component {
       />
     )
   }
+
   /**
    * Renders the title and input
    * @returns {JSX}
@@ -218,23 +267,54 @@ export default class TodoDetail extends Component {
       );
     }
   }
-
+  //TODO: Optimize by not requesting filtering twice
+  //TODO: Refactor to make the current filter gettable
   /**
    * Renders an active counter if there are more than one todo item
    * @returns {XML}
    */
   renderCounter () {
     const todo = this.state.todo.data;
+    const currentFilter = this.state.filters[0];
     const { items } = todo;
 
-    if (items.length) {
-      const incomplete = items.filter(item => !item.complete);
+    //  Have this somewhere else, should figure out a way to reuse
+    const counts = items.reduce((count, item) => {
+      if (item.complete) {
+        count.complete++;
+      } else if (!item.complete) {
+        count.active++;
+      }
+      return count;
+    }, {
+      complete: 0,
+      active: 0
+    });
 
-      const label = `${incomplete.length}/${items.length} Tasks Active`;
-      return <span className='f-right'>{label}</span>
+
+    if (items.length) {
+
+      let label;
+
+      if (currentFilter === ALL) {
+        label = `${counts.active} Active - ${counts.complete} Complete`
+      } else {
+        const filterLabel = currentFilter === ACTIVE ? 'Active' : 'Completed';
+        label = `${counts[currentFilter.toLowerCase()]}/${items.length} Tasks ${filterLabel}`;
+      }
+
+
+      return (
+        <span className='f-right'>
+          <i onClick={() => this.onToggleFilter('left')}className='fa fa-caret-left cursor--pointer'/>
+          &nbsp;{label}&nbsp;
+          <i onClick={() => this.onToggleFilter('right')} className='fa fa-caret-right cursor--pointer'/>
+        </span>
+      );
     }
 
   }
+
   //TODO: This is getting big, should be refactored into smaller chunks
   /**
    * Render the Todos
@@ -247,33 +327,47 @@ export default class TodoDetail extends Component {
 
     //  Checks todos and renders the state of the list
     if (Array.isArray(todo.items) && todo.items.length) {
-      const items = todo.items.map((item, idx) => {
+      const filtered = this.getFilteredTodos(todo.items);
+      if (filtered.length) {
+        const items = filtered.map((item, idx) => {
 
-        let todoItem = (
-          <TodoItem
-            todo={item}
-            onToggle={() => this.onToggleTodo(idx)}
-            onEdit={() => this.editBuffer(`Todo:${idx}`) }
-            onRemove={() => this.onRemoveTodo(idx)}/>
+          let todoItem = (
+            <TodoItem
+              todo={item}
+              onToggle={() => this.onToggleTodo(idx)}
+              onEdit={() => this.editBuffer(`Todo:${idx}`) }
+              onRemove={() => this.onRemoveTodo(idx)}/>
+          );
+
+          //  Check if Todo is in edit state
+          if (this.state.edit[`Todo:${idx}`]) {
+            todoItem = this.renderTodoEdit(item, idx);
+          }
+
+          return (
+            <li key={idx}>
+              {todoItem}
+            </li>
+          );
+        });
+
+        listState =(
+          <ul className='list'>
+            {items}
+          </ul>
         );
+      } else {
+        listState = (
+          <div className='text-md-center m-y-1 text-muted'>
+            <h1> <i className='fa fa-leaf fa-3 color-green' /></h1>
+            <p className='p-x-4'>
+              Hate to leaf you hanging, but this filter seems empty.
+              Try messing with those <i className='fa fa-caret-left color-green' /> filter <i className='fa fa-caret-right color-green' /> thingies.
+            </p>
+          </div>
+        )
+      }
 
-        //  Check if Todo is in edit state
-        if (this.state.edit[`Todo:${idx}`]) {
-          todoItem = this.renderTodoEdit(item, idx);
-        }
-
-        return (
-          <li key={idx}>
-            {todoItem}
-          </li>
-        );
-      });
-
-      listState =(
-        <ul className='list'>
-          {items}
-        </ul>
-      );
     } else {
 
       //  Sets empty state
@@ -281,8 +375,8 @@ export default class TodoDetail extends Component {
         <div className='text-md-center m-y-1 text-muted'>
          <h1> <i className='fa fa-leaf fa-3 color-green' /></h1>
           <p className='p-x-4'>
-            Hate to leaf you hangin', but it looks like you have nothing to do my friend.
-            Try adding another item or mess with those fancy <i className='fa fa-toggle-off color-green' /> filter things.
+            Hate to leaf you hanging, but it looks like you have nothing to do my friend.
+            Try adding a new todo item or selecting another todo list to look at.
           </p>
         </div>
       );

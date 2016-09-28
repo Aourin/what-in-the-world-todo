@@ -19,6 +19,9 @@ export default class TodoDetail extends Component {
     this.onAddTodo = this.onAddTodo.bind(this);
   }
 
+  /**
+   * On adding a new todo
+   */
   onAddTodo () {
     TodoService.create()
       .then(() => {
@@ -31,6 +34,9 @@ export default class TodoDetail extends Component {
     this.refreshState();
   }
 
+  /**
+   * Refresh the state of data
+   */
   refreshState () {
     this.setState({
       todo: TodoService.getSelected()
