@@ -3,15 +3,14 @@ import _                                    from 'lodash';
 
 import InputBuffer from '../../components/InputBuffer';
 import TodoItem    from './TodoItem'
+import TodoService from '../../services/TodoService';
 
 export default class TodoDetail extends Component {
   static propTypes = {
     params: T.object
   };
   state = {
-    todo: {
-      items: []
-    },
+    todo: {},
     buffer: {},
     edit: {}
   };
@@ -20,19 +19,46 @@ export default class TodoDetail extends Component {
     super();
     this.onResetBuffer = this.onResetBuffer.bind(this);
     this.onAddTodo = this.onAddTodo.bind(this);
+    this.setState = this.setState.bind(this);
   }
 
+  componentWillMount () {
+    const selectedState = TodoService.getSelected();
+    this.fetchTodo();
+
+    //  Lazy Load
+    this.setState({
+      todo: selectedState
+    });
+  }
+
+  /**
+   * Calls fetch on the service
+   */
+  fetchTodo () {
+    TodoService.fetchOne(this.props.params.id)
+      .then(() => {
+        this.setState({
+          todo: TodoService.getSelected()
+        })
+      });
+  }
   /**
    * Sets a prop on the state model
    * @param prop
    * @param value
    */
   onSetProp (propPath, value) {
-    const updated = {...this.state.todo};
+    const updated = {...this.state.todo.data};
     _.set(updated, propPath, value);
-    console.log('new updated', updated);
+
+    const todoState = {
+      ...this.state.todo,
+      data: updated
+    };
+
     this.setState({
-      todo: updated,
+      todo: todoState,
       buffer: updated,
       edit: {}
     });
@@ -43,7 +69,7 @@ export default class TodoDetail extends Component {
    */
   onResetBuffer () {
     this.setState({
-      buffer: {...this.state.todo},
+      buffer: {...this.state.todo.data},
       edit: {}
     });
   }
@@ -63,7 +89,7 @@ export default class TodoDetail extends Component {
    */
   onAddTodo () {
     const todo = {...this.state.todo};
-    todo.items.push({
+    todo.data.items.push({
       complete: false
     });
 
@@ -75,14 +101,14 @@ export default class TodoDetail extends Component {
    * @param idx
    */
   onToggleTodo (idx) {
-    const todoList = {...this.state.todo};
-    const todoItem = todoList.items[idx];
+    const todo = {...this.state.todo};
+    const todoItem = todo.data.items[idx];
 
     todoItem.complete = !todoItem.complete;
 
     this.setState({
-      todo: todoList
-    })
+      todo: {...todo}
+    });
   }
 
   /**
@@ -90,13 +116,16 @@ export default class TodoDetail extends Component {
    * @param idx
    */
   onRemoveTodo (idx) {
-    const { todo } = this.state;
+    const todo = this.state.todo;
 
-    const newItems = todo.items.filter((item, index) => idx !== index);
+    const newItems = todo.data.items.filter((item, index) => idx !== index);
     this.setState({
       todo: {
         ...todo,
-        items: newItems
+        data: {
+          ...todo.data,
+          items: newItems
+        }
       },
       edit: {}
     })
@@ -134,7 +163,7 @@ export default class TodoDetail extends Component {
    */
   renderTitle () {
     const { todo, buffer, edit } = this.state;
-
+    const { data } = todo;
     //  Checks if title is in the edit state
     if (edit.title) {
       return (
@@ -142,7 +171,7 @@ export default class TodoDetail extends Component {
           name='title'
           placeholder='Enter Title of Cool Todo List'
           className='form-control form-control-lg input input--line-only'
-          value={todo.title || ''}
+          value={data.title || ''}
           onChange={(e) => {
             this.onSetProp('title', e.target.value)
           }}
@@ -151,7 +180,7 @@ export default class TodoDetail extends Component {
     } else {
 
       //  Creates the title and edit icon
-      const title = todo.title ? todo.title : 'Please Add A Title';
+      const title = data.title ? data.title : 'Please Add A Title';
       return (
         <span>
           <i className='fa fa-pencil-square-o' onClick={() => this.editBuffer('title')} /> {title}
@@ -166,8 +195,8 @@ export default class TodoDetail extends Component {
    * Render the Todos
    * @returns {JSX}
    */
-  renderTodos () {
-    const { todo } = this.state;
+  renderTodo () {
+    const todo = this.state.todo.data;
 
     let listState;
 
@@ -246,9 +275,7 @@ export default class TodoDetail extends Component {
     ];
   }
 
-  render () {
-    const { params } = this.props;
-
+  renderPane () {
     return (
       <div className='detail-pane'>
         <div className='row'>
@@ -258,7 +285,7 @@ export default class TodoDetail extends Component {
                 {this.renderTitle()}
               </div>
               <div className='panel-body'>
-                {this.renderTodos()}
+                {this.renderTodo()}
                 {this.renderActions()}
               </div>
             </div>
@@ -267,11 +294,24 @@ export default class TodoDetail extends Component {
       </div>
     );
   }
+
+  render () {
+    const selectedTodo = TodoService.getSelected();
+
+    if (selectedTodo.loading) {
+      return <h3>Loading the Todo!</h3>;
+    } else if (selectedTodo.init && selectedTodo.data) {
+      return this.renderPane();
+    } else {
+      return <h3>There was an issue loading the todo</h3>;
+    }
+  }
 }
 
 //TODO: Refactor todo items into separte comp
 //TODO: Refactor empty state to generic empty state comp for reuse
 //TODO: Experimenting with view only state handling pattern thingy
 //TODO: Reorganize functions by group
+//TODO: Data store needs some work, makes some wonky implementation in View
 
 //  Potential state issue with how it is tracked by array index

@@ -16,27 +16,35 @@ export default class TodoListView extends Component {
   state = {
     todos: {}
   };
+
   constructor () {
     super();
     this.setState = this.setState.bind(this);
   }
-  selectTodo (id) {
-    //  I don't like this, but React Router v4 is still trying to figure this out
-    this.context.router.transitionTo(`/todos/${id}`);
-  }
+
   componentWillMount () {
     this.setState({
-      todos: TodoService.getList()
+      todos: TodoService.getState()
     });
 
     //  Still prefer global state, but this will do for now
     TodoService.fetchList()
       .then(() => {
         this.setState({
-          todos: TodoService.getList()
+          todos: TodoService.getState()
         })
       });
 
+  }
+
+  /**
+   * Handles selecting a todo from the list
+   * @param id
+   */
+  selectTodo (id) {
+    //  I don't like this, but React Router v4 is still trying to figure this out
+    TodoService.selectOne(id);
+    this.context.router.transitionTo(`/todos/${id}`);
   }
 
   /**
@@ -48,8 +56,8 @@ export default class TodoListView extends Component {
 
     if (todos.loading) {
       return <h3>LOADING SOME TODOS</h3>;
-    } else if (todos.resources && todos.resources.length) {
-      return this.renderTodos(todos.resources);
+    } else if (TodoService.getList()) {
+      return this.renderTodos(TodoService.getList());
     } else {
       return <h3>An Error Getting Todos</h3>
     }
