@@ -20,13 +20,14 @@ export default class TodoListView extends Component {
   constructor () {
     super();
     this.setState = this.setState.bind(this);
+    this.fetchList = this.fetchList.bind(this);
   }
 
   componentWillMount () {
-    this.setState({
-      todos: TodoService.getState()
-    });
+    this.fetchList();
+  }
 
+  fetchList () {
     //  Still prefer global state, but this will do for now
     TodoService.fetchList()
       .then(() => {
@@ -34,6 +35,10 @@ export default class TodoListView extends Component {
           todos: TodoService.getState()
         })
       });
+
+    this.setState({
+      todos: TodoService.getState()
+    });
   }
 
   /**
@@ -42,10 +47,10 @@ export default class TodoListView extends Component {
    */
   selectTodo (id) {
     //  I don't like this, but React Router v4 is still trying to figure this out
+    TodoService.clearSelected();
     TodoService.selectOne(id);
     this.context.router.transitionTo(`/todos/${id}`);
   }
-
   /**
    * Renders out the state logic for the todo list
    * @returns {XML}
@@ -79,13 +84,29 @@ export default class TodoListView extends Component {
       );
     });
   }
+  renderRefresh () {
+    return (
+      <button
+        className='btn btn-main'
+        name='refresh f-right'
+        onClick={this.fetchList}>
+        <i className='fa fa-refresh' /> Refresh
+      </button>
+    );
+  }
 
   render () {
     return (
       <div className='container-fluid sidebar-list'>
         <div className='row'>
           <div className='col-md'>
-            <h3>List O' Todos</h3>
+            <h3>
+              List O' Todos {this.renderRefresh()}
+            </h3>
+          </div>
+        </div>
+        <div className='row'>
+          <div className='col-md'>
             { this.renderTodosState() }
           </div>
         </div>

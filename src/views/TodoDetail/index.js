@@ -34,12 +34,16 @@ export default class TodoDetail extends Component {
   componentWillMount () {
     this.fetchTodo();
   }
-
+  componentWillReceiveProps (nextProps) {
+    if (this.props.params.id !== nextProps.params.id) {
+      this.fetchTodo(nextProps.params.id);
+    }
+  }
   /**
    * Calls fetch on the service
    */
-  fetchTodo () {
-    TodoService.fetchOne(this.props.params.id)
+  fetchTodo (id) {
+    TodoService.fetchOne(id || this.props.params.id)
       .then(() => {
         this.setState({
           todo: TodoService.getSelected()
@@ -47,6 +51,7 @@ export default class TodoDetail extends Component {
       });
     this.refreshState();
   }
+
   onSetTodoLabel (item, value) {
     const updated = {...this.state.todo.data};
     const idx = _.findIndex(updated.items, {_id: item._id});
@@ -73,16 +78,7 @@ export default class TodoDetail extends Component {
     const updated = {...this.state.todo.data};
     _.set(updated, propPath, value);
 
-    const todoState = {
-      ...this.state.todo,
-      data: updated
-    };
-
-    this.setState({
-      todo: todoState,
-      buffer: updated,
-      edit: {}
-    });
+    this.onSaveTodo(updated);
   }
 
   /**
@@ -227,7 +223,9 @@ export default class TodoDetail extends Component {
    */
   refreshState () {
     this.setState({
-      todo: TodoService.getSelected()
+      todo: TodoService.getSelected(),
+      edit: {},
+      buffer: {...TodoService.getSelected().data}
     });
   }
 
@@ -437,16 +435,24 @@ export default class TodoDetail extends Component {
         <i className='fa fa-eraser' /> Clear Completed!
       </button>
     );
+
+    //  Removing save btn until can work through state issues
     return [
       addItem,
-      saveBtn,
       clearBtn
     ];
   }
 
   renderPane () {
+    const selectedTodo = TodoService.getSelected();
+    let saving;
+
+    if (selectedTodo.updating) {
+      saving = <span className='save-notification'><i className='fa fa-floppy-o' /></span>;
+    }
     return (
       <div className='detail-pane'>
+        {saving}
         <div className='row'>
           <div className='col-md'>
             <div className='panel panel--outline panel--outline-main'>
@@ -470,9 +476,7 @@ export default class TodoDetail extends Component {
 
     if (selectedTodo.loading) {
       return <h3>Loading the Todo!</h3>;
-    } else if (selectedTodo.updating) {
-      return <h3>Updating the todo!</h3>;
-    } else if (selectedTodo.init && selectedTodo.data) {
+    }  else if (selectedTodo.init && selectedTodo.data) {
       return this.renderPane();
     } else {
       return <h3>There was an issue loading the todo</h3>;

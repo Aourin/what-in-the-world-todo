@@ -52,3 +52,16 @@ $todo-item-hover-color: $app-yellow;
   font-size: $todo-item-size * 1.2;
   cursor: pointer;
 }
+
+$save-notification-width: 3rem;
+.save-notification {
+  position: fixed;
+  bottom: 1rem;
+  right: 3rem;
+  font-size: 2rem;
+  background: $app-main;
+  width: $save-notification-width;
+  height: $save-notification-width;
+  text-align:center;
+  border-radius: $save-notification-width;
+}
