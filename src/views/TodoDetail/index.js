@@ -29,6 +29,7 @@ export default class TodoDetail extends Component {
     this.onSaveTodo = this.onSaveTodo.bind(this);
     this.onClearComplete = this.onClearComplete.bind(this);
     this.onToggleFilter = this.onToggleFilter.bind(this);
+    this.setFilteredTodos = this.setFilteredTodos.bind(this);
   }
 
   componentWillMount () {
@@ -42,7 +43,8 @@ export default class TodoDetail extends Component {
     TodoService.fetchOne(this.props.params.id)
       .then(() => {
         this.setState({
-          todo: TodoService.getSelected()
+          todo: TodoService.getSelected(),
+          filtered: [...TodoService.getSelected().data.items]
         })
       });
     this.refreshState();
@@ -98,6 +100,7 @@ export default class TodoDetail extends Component {
     });
 
     this.setState({ todo });
+    this.setFilteredTodos(todo.data.items);
   }
 
   /**
@@ -113,6 +116,7 @@ export default class TodoDetail extends Component {
     this.setState({
       todo: {...todo}
     });
+    this.setFilteredTodos(todo.data.items);
   }
 
   /**
@@ -132,7 +136,8 @@ export default class TodoDetail extends Component {
         }
       },
       edit: {}
-    })
+    });
+    this.setFilteredTodos(newItems);
   }
 
   /**
@@ -148,6 +153,7 @@ export default class TodoDetail extends Component {
         data: updated
       }
     });
+    this.setFilteredTodos(updated.items);
   }
 
   /**
@@ -157,7 +163,8 @@ export default class TodoDetail extends Component {
 
     TodoService.saveOne(this.state.todo.data)
       .then(() => {
-        this.refreshState()
+        this.refreshState();
+        this.setFilteredTodos()
       });
 
     this.refreshState();
@@ -179,20 +186,28 @@ export default class TodoDetail extends Component {
     this.setState({
       filters: filters
     });
-
+    this.setFilteredTodos(this.state.todos.data.items, filters[0]);
   }
 
+  /**
+   * Sets the filtered todos on changes of state
+   * @param todos
+   */
+  setFilteredTodos (todos, filter) {
+    this.setState({
+      filtered: this.getFilteredTodos(todos, filter || this.state.filters[0])
+    });
+  }
   //TODO: Refactor filters to just iterate on an index ?
   /**
    * Checks the first state filter and
    * @param todos
    * @returns {*}
    */
-  getFilteredTodos (todos) {
-    const currentFilter = this.state.filters[0];
+  getFilteredTodos (todos, filter) {
     let filtered;
 
-    switch (currentFilter) {
+    switch (filter) {
       case ALL : filtered = [...todos];
         break;
       case COMPLETE: filtered = todos.filter(item => item.complete);
@@ -327,7 +342,7 @@ export default class TodoDetail extends Component {
 
     //  Checks todos and renders the state of the list
     if (Array.isArray(todo.items) && todo.items.length) {
-      const filtered = this.getFilteredTodos(todo.items);
+      const filtered = [...this.state.filtered];
       if (filtered.length) {
         const items = filtered.map((item, idx) => {
 
