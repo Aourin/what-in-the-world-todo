@@ -47,6 +47,23 @@ export default class TodoDetail extends Component {
       });
     this.refreshState();
   }
+  onSetTodoLabel (item, value) {
+    const updated = {...this.state.todo.data};
+    const idx = _.findIndex(updated.items, {_id: item._id});
+    updated.items[idx].label = value;
+
+    const todoState = {
+      ...this.state.todo,
+      data: updated
+    };
+
+    this.setState({
+      todo: todoState,
+      buffer: updated,
+      edit: {}
+    });
+    this.onSaveTodo(updated);
+  }
   /**
    * Sets a prop on the state model
    * @param prop
@@ -98,6 +115,8 @@ export default class TodoDetail extends Component {
     });
 
     this.setState({ todo });
+    this.onSaveTodo();
+
   }
 
   /**
@@ -113,6 +132,7 @@ export default class TodoDetail extends Component {
     this.setState({
       todo: {...todo}
     });
+    this.onSaveTodo(todo.data);
   }
 
   /**
@@ -120,19 +140,14 @@ export default class TodoDetail extends Component {
    * @param idx
    */
   onRemoveTodo (idx) {
-    const todo = this.state.todo;
+    const todo = this.state.todo.data;
 
-    const newItems = todo.data.items.filter((item, index) => idx !== index);
-    this.setState({
-      todo: {
-        ...todo,
-        data: {
-          ...todo.data,
-          items: newItems
-        }
-      },
-      edit: {}
-    })
+    const newItems = todo.items.filter((item, index) => idx !== index);
+    const newTodo = {
+      ...todo,
+      items: newItems
+    };
+    this.onSaveTodo(newTodo);
   }
 
   /**
@@ -148,14 +163,15 @@ export default class TodoDetail extends Component {
         data: updated
       }
     });
+    this.onSaveTodo(updated);
   }
 
   /**
    * Save Todo by sending to service
    */
-  onSaveTodo () {
+  onSaveTodo (todo) {
 
-    TodoService.saveOne(this.state.todo.data)
+    TodoService.saveOne(todo || this.state.todo.data)
       .then(() => {
         this.refreshState()
       });
@@ -229,7 +245,7 @@ export default class TodoDetail extends Component {
         className='form-control form-control input input--line-only'
         value={item.label || ''}
         onChange={(e) => {
-          this.onSetProp(`items[${idx}].label`, e.target.value);
+          this.onSetTodoLabel(item, e.target.value);
         }}
         onBlur={this.onResetBuffer}
       />
@@ -330,18 +346,18 @@ export default class TodoDetail extends Component {
       const filtered = this.getFilteredTodos(todo.items);
       if (filtered.length) {
         const items = filtered.map((item, idx) => {
-
+          const parentIndex = _.findIndex(todo.items, item);
           let todoItem = (
             <TodoItem
               todo={item}
-              onToggle={() => this.onToggleTodo(idx)}
-              onEdit={() => this.editBuffer(`Todo:${idx}`) }
-              onRemove={() => this.onRemoveTodo(idx)}/>
+              onToggle={() => this.onToggleTodo(parentIndex)}
+              onEdit={() => this.editBuffer(`Todo:${parentIndex}`) }
+              onRemove={() => this.onRemoveTodo(parentIndex)}/>
           );
 
           //  Check if Todo is in edit state
-          if (this.state.edit[`Todo:${idx}`]) {
-            todoItem = this.renderTodoEdit(item, idx);
+          if (this.state.edit[`Todo:${parentIndex}`]) {
+            todoItem = this.renderTodoEdit(item, parentIndex);
           }
 
           return (
