@@ -17,11 +17,20 @@ $panel-border-width: 0.25rem;
     &-blue {
        border-color: $app-gray;
     }
+    &-yellow {
+       border-color: $app-yellow;
+    }
     &-blue {
       border-color: $app-blue;
     }
     &-main-dark {
       border-color: $app-main-dark;
+    }
+    &-gray {
+      border-color: $app-gray;
+    }
+    &-gray-light {
+      border-color: $app-gray-light;
     }
   }
 }
