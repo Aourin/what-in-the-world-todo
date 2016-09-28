@@ -17,10 +17,11 @@ export default class TodoDetail extends Component {
 
   constructor () {
     super();
+    this.setState = this.setState.bind(this);
     this.onResetBuffer = this.onResetBuffer.bind(this);
     this.onAddTodo = this.onAddTodo.bind(this);
-    this.setState = this.setState.bind(this);
     this.onSaveTodo = this.onSaveTodo.bind(this);
+    this.onClearComplete = this.onClearComplete.bind(this);
   }
 
   componentWillMount () {
@@ -128,14 +129,22 @@ export default class TodoDetail extends Component {
   }
 
   /**
-   * Refreshes the state
-   * Uses between transitions and refetching the selected state
+   * Clears the completed todos
    */
-  refreshState () {
+  onClearComplete () {
+    const updated = { ...this.state.todo.data };
+
+    updated.items = updated.items.filter(item => !item.complete);
     this.setState({
-      todo: TodoService.getSelected()
+      todo: {
+        ...this.state.todo,
+        data: updated
+      }
     });
   }
+
+
+
   /**
    * Save Todo by sending to service
    */
@@ -148,6 +157,16 @@ export default class TodoDetail extends Component {
 
     this.refreshState();
   }
+  /**
+   * Refreshes the state
+   * Uses between transitions and refetching the selected state
+   */
+  refreshState () {
+    this.setState({
+      todo: TodoService.getSelected()
+    });
+  }
+
   /**
    * Render todo item edit with InputBuffer
    * @param item
@@ -299,9 +318,19 @@ export default class TodoDetail extends Component {
         <i className='fa fa-save' /> Save Fancy List
       </button>
     );
+    const clearBtn = (
+      <button
+        key='clear-btn'
+        name='clear-item'
+        className='btn btn-purple btn-block'
+        onClick={this.onClearComplete}>
+        <i className='fa fa-eraser' /> Clear Completed!
+      </button>
+    );
     return [
       addItem,
-      saveBtn
+      saveBtn,
+      clearBtn
     ];
   }
 
