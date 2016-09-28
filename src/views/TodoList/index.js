@@ -34,7 +34,6 @@ export default class TodoListView extends Component {
           todos: TodoService.getState()
         })
       });
-
   }
 
   /**

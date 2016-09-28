@@ -73,6 +73,31 @@ export class TodoService {
       });
   }
 
+  create (data = {}) {
+    this.STORE.selected.creating = true;
+
+    return axios.post(`${BASE_PATH}`, data)
+      .then((resp) => {
+        const { data } = resp;
+        this.STORE.selected = {
+          ...this.STORE.selected,
+          error: null,
+          init: true,
+          creating: false,
+          data: data
+        };
+
+        //  Update the hash
+        this.STORE.hash[data.id] = data;
+      })
+      .catch((e) => {
+        this.STORE.selected = {
+          ...this.STORE.selected,
+          creating: false,
+          error: e
+        };
+      });
+  }
   /**
    * Save One Todo (Update)
    * @param data
@@ -143,6 +168,20 @@ export class TodoService {
    */
   getSelected () {
     return this.STORE.selected;
+  }
+
+  /**
+   * Clears selected data
+   */
+  clearSelected () {
+    this.STORE.selected = {
+      loading: false,
+      updating: false,
+      creating: false,
+      init: false,
+      error: null,
+      data: {}
+    };
   }
 }
 

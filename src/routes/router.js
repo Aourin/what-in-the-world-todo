@@ -8,6 +8,7 @@ import {
 //  Views
 import TodoList           from '../views/TodoList';
 import TodoDetail         from '../views/TodoDetail';
+import TodoEmpty          from '../views/TodoEmpty';
 
 //  Components
 import MatchTypeRoute     from '../components/MatchTypeRoute';
@@ -37,7 +38,7 @@ const routes = [
       },
       {
         size: 2,
-        children: TodoDetail
+        component: TodoEmpty
       }
     ]
 
