@@ -7,9 +7,7 @@ var path              = require('path')
 var BUILD_PATH = path.resolve(__dirname, 'dist');
 
 module.exports = {
-  entry: [
-    './app/index.js',
-  ],
+  entry: './app/index.js',
   output: {
     path: BUILD_PATH,
     publicPath: '/',
