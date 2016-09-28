@@ -20,16 +20,11 @@ export default class TodoDetail extends Component {
     this.onResetBuffer = this.onResetBuffer.bind(this);
     this.onAddTodo = this.onAddTodo.bind(this);
     this.setState = this.setState.bind(this);
+    this.onSaveTodo = this.onSaveTodo.bind(this);
   }
 
   componentWillMount () {
-    const selectedState = TodoService.getSelected();
     this.fetchTodo();
-
-    //  Lazy Load
-    this.setState({
-      todo: selectedState
-    });
   }
 
   /**
@@ -42,6 +37,7 @@ export default class TodoDetail extends Component {
           todo: TodoService.getSelected()
         })
       });
+    this.refreshState();
   }
   /**
    * Sets a prop on the state model
@@ -132,10 +128,25 @@ export default class TodoDetail extends Component {
   }
 
   /**
+   * Refreshes the state
+   * Uses between transitions and refetching the selected state
+   */
+  refreshState () {
+    this.setState({
+      todo: TodoService.getSelected()
+    });
+  }
+  /**
    * Save Todo by sending to service
    */
   onSaveTodo () {
-    console.log('This Will Call a save');
+
+    TodoService.saveOne(this.state.todo.data)
+      .then(() => {
+        this.refreshState()
+      });
+
+    this.refreshState();
   }
   /**
    * Render todo item edit with InputBuffer
@@ -162,7 +173,7 @@ export default class TodoDetail extends Component {
    * @returns {JSX}
    */
   renderTitle () {
-    const { todo, buffer, edit } = this.state;
+    const { todo, edit } = this.state;
     const { data } = todo;
     //  Checks if title is in the edit state
     if (edit.title) {
@@ -300,6 +311,8 @@ export default class TodoDetail extends Component {
 
     if (selectedTodo.loading) {
       return <h3>Loading the Todo!</h3>;
+    } else if (selectedTodo.updating) {
+      return <h3>Updating the todo!</h3>;
     } else if (selectedTodo.init && selectedTodo.data) {
       return this.renderPane();
     } else {

@@ -72,6 +72,39 @@ export class TodoService {
         this.STORE.hash[data.id] = data;
       });
   }
+
+  /**
+   * Save One Todo (Update)
+   * @param data
+   * @returns {Promise<R2|R1>|Promise<R>|Promise.<TResult>}
+   */
+  saveOne (data) {
+    const { id } = data;
+    if (id) {
+      this.STORE.selected.updating = true;
+
+      return axios.put(`${BASE_PATH}/${id}`, data)
+        .then((resp) => {
+          const { data } = resp;
+          this.STORE.selected = {
+            ...this.STORE.selected,
+            error: null,
+            updating: false,
+            data: data
+          };
+
+          //  Update the hash
+          this.STORE.hash[data.id] = data;
+        })
+        .catch((e) => {
+          this.STORE.selected = {
+            ...this.STORE.selected,
+            updating: false,
+            error: e
+          };
+        });
+    }
+  }
   /**
    * Selections the item from the hash
    * @param id
