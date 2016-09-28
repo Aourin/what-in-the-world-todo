@@ -200,8 +200,23 @@ export default class TodoDetail extends Component {
     }
   }
 
-  //TODO: This is getting big, should be refactored into smaller chunks
+  /**
+   * Renders an active counter if there are more than one todo item
+   * @returns {XML}
+   */
+  renderCounter () {
+    const todo = this.state.todo.data;
+    const { items } = todo;
 
+    if (items.length) {
+      const incomplete = items.filter(item => !item.complete);
+
+      const label = `${incomplete.length}/${items.length} Tasks Active`;
+      return <span className='f-right'>{label}</span>
+    }
+
+  }
+  //TODO: This is getting big, should be refactored into smaller chunks
   /**
    * Render the Todos
    * @returns {JSX}
@@ -261,6 +276,10 @@ export default class TodoDetail extends Component {
     );
   }
 
+  /**
+   * Renders actions able to be taken
+   * @returns {*[]}
+   */
   renderActions () {
     const addItem = (
       <button
@@ -294,6 +313,7 @@ export default class TodoDetail extends Component {
             <div className='panel panel--outline panel--outline-main'>
               <div className='panel-title bg-main color-white'>
                 {this.renderTitle()}
+                {this.renderCounter()}
               </div>
               <div className='panel-body'>
                 {this.renderTodo()}

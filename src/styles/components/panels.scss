@@ -35,6 +35,7 @@ $panel-border-width: 0.25rem;
   }
 }
 .panel-title {
+  display: flex;
   font-size: $panel-title-font-size;
   padding:  $panel-padding;
 }
