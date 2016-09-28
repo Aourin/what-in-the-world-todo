@@ -8,13 +8,15 @@ const RESOURCE = 'todos';
 
 const BASE_PATH = `${API_URL}/${RESOURCE}`;
 export class TodoService {
-  list = {
+  STORE = {
     loading: false,
-    init: false,
-    error: null
-  };
-  single = {
-    loading: false,
+    hash: {},
+    data: [],
+    selected: {
+      loading: false,
+      data: {},
+      init: false
+    },
     init: false,
     error: null
   };
@@ -24,21 +26,25 @@ export class TodoService {
    * @returns {Promise.<T>|Promise<R>}
    */
   fetchList () {
-    this.list.loading = true;
+    this.STORE.loading = true;
 
     return axios.get(BASE_PATH)
       .then((resp) => {
-        this.list = {
-          ...this.list,
-          resources: resp.data,
+        const idHash = {};
+        resp.data.forEach((item) => {
+          idHash[ item.id ] = item;
+        });
+        this.STORE = {
+          ...this.STORE,
+          hash: idHash,
           error: null,
           loading: false,
           init: true
         };
       })
       .catch((e) => {
-        this.list = {
-          ...this.list,
+        this.STORE = {
+          ...this.STORE,
           loading: false,
           error: e
         };
@@ -46,22 +52,68 @@ export class TodoService {
   }
 
   /**
+   * Will Update the hash id in the store
+   * @param id
+   * @returns {Promise<R2|R1>|Promise<R>|Promise.<TResult>|*}
+   */
+  fetchOne (id) {
+    this.STORE.selected.loading = true;
+
+    return axios.get(`${BASE_PATH}/${id}`)
+      .then((resp) => {
+        const { data } = resp;
+        this.STORE.selected = {
+          ...this.STORE.selected,
+          loading: false,
+          init: true,
+          data: data
+        };
+        //  Update the hash
+        this.STORE.hash[data.id] = data;
+      });
+  }
+  /**
+   * Selections the item from the hash
+   * @param id
+   */
+  selectOne (id) {
+    if (this.STORE.hash && this.STORE.hash[id]) {
+      this.STORE.selected = {
+        loading: false,
+        error: null,
+        data: this.STORE.hash[id]
+      };
+    }
+  }
+
+  /**
    * Returns the current List State
    * @returns {{loading: boolean, init: boolean, error: null, items: Array}}
    */
+  getState () {
+    return this.STORE;
+  }
+
+  /**
+   * Returns friendls.STORE of the hashed data
+   * @returns {Array}
+   */
   getList () {
-    return this.list;
+    return Object.keys(this.STORE.hash).map((id) => {
+      return this.STORE.hash[id];
+    });
   }
 
   /**
    * Retuns the single item State
    * @returns {{loading: boolean, init: boolean, error: null, items: Array}}
    */
-  getSingle () {
-    return this.single;
+  getSelected () {
+    return this.STORE.selected;
   }
 }
 
 export default new TodoService();
 
 
+//TODO: Look into a more immutable state
